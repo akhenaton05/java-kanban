@@ -1,38 +1,31 @@
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class TaskManager {
     HashMap<Integer, Task> tasks = new HashMap<>();
     HashMap<Integer, Epic> epics = new HashMap<>();
     HashMap<Integer, Subtask> subtasks = new HashMap<>();
 
-    private static int id = 1;
+    private int id = 1;
 
 
     //Получение списка задач
     public ArrayList<Task> showAllTasks() {
-        ArrayList<Task> taskList= new ArrayList<>();
-        for (Task task : tasks.values()) {
-            taskList.add(task);
-        }
+        Collection<Task> values = tasks.values();
+        ArrayList<Task> taskList = new ArrayList<Task>(values);
         return taskList;
     }
 
     //Получение списка epics
     public ArrayList<Epic> showAllEpics() {
-        ArrayList<Epic> epicList= new ArrayList<>();
-        for (Epic epic : epics.values()) {
-            epicList.add(epic);
-        }
+        Collection<Epic> values = epics.values();
+        ArrayList<Epic> epicList = new ArrayList<Epic>(values);
         return epicList;
     }
 
     //Получение списка subtasks
     public ArrayList<Subtask> showAllSubtasks() {
-        ArrayList<Subtask> subList= new ArrayList<>();
-        for (Subtask subtask : subtasks.values()) {
-            subList.add(subtask);
-        }
+        Collection<Subtask> values = subtasks.values();
+        ArrayList<Subtask> subList = new ArrayList<Subtask>(values);
         return subList;
     }
 
@@ -213,6 +206,23 @@ public class TaskManager {
 
     //Удаление Epic по ID
     public void deleteEpicById(int id) {
+        Epic target = epics.get(id);
+        ArrayList<Integer> subtaskList = target.getSubtasks();
+        //Проверка листов на null / empty
+        if (subtaskList == null || subtaskList.isEmpty()) {
+            epics.remove(id);
+            return;
+        }
+        //Не нашел простого способа удалить сабтаски эпика из хэшмапы без ConcurrentError, сделал через итератор, но его еще не проходили по курсу
+        Iterator<Map.Entry<Integer, Subtask>> iterator = subtasks.entrySet().iterator();
+        while (iterator.hasNext()) {
+            int iterId = iterator.next().getKey();
+            for (int targetId : subtaskList) {
+                if (targetId == iterId) {
+                    iterator.remove();
+                }
+            }
+        }
         epics.remove(id);
     }
 

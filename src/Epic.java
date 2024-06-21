@@ -1,8 +1,14 @@
 import java.util.ArrayList;
 
 public class Epic extends Task{
-    ArrayList<Integer> subtasks = new ArrayList<>();
-    private boolean haveSubtasks = false;
+    ArrayList<Integer> subtasks;
+    private boolean haveSubtasks;
+
+    public Epic (String title, String description) {
+        super(title, description);
+        this.subtasks = new ArrayList<>();
+        this.haveSubtasks = false;
+    }
 
     public ArrayList<Integer> getSubtasks() {
         return subtasks;
@@ -23,12 +29,7 @@ public class Epic extends Task{
 
     @Override
     public String toString() {
-        return "Epic{" +
-                "title='" + this.getTitle() + '\'' +
-                ", description='" + this.getDescription() + '\'' +
-                ", id=" + this.getId() +
-                ", status=" + this.getStatus() +
-                ", haveSubtasks=" + haveSubtasks +
-                '}';
+        String result = String.format("Epic{title='%s', description='%s', id='%d', status='%s', haveSubtasks='%b'}", this.getTitle(), this.getDescription(), this.getId(), this.getStatus(), haveSubtasks);
+        return result;
     }
 }

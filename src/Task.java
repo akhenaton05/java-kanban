@@ -3,10 +3,19 @@ import java.util.Objects;
 public class Task {
     private String title;
     private String description;
-
     private int id;
     private StatusPriority status;
 
+    public Task(String title, String description, StatusPriority status) {
+        this.title = title;
+        this.description = description;
+        this.status = status;
+    }
+
+    public Task(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
 
     public String getTitle() {
         return title;
@@ -42,12 +51,8 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status=" + status +
-                '}';
+        String result = String.format("Task{title='%s', description='%s', id='%d', status='%s'}", title, description, id, status);
+        return result;
     }
 
     @Override
