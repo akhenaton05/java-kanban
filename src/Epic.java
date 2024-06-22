@@ -1,10 +1,10 @@
 import java.util.ArrayList;
 
-public class Epic extends Task{
-    ArrayList<Integer> subtasks;
+public class Epic extends Task {
+    private ArrayList<Integer> subtasks;
     private boolean haveSubtasks;
 
-    public Epic (String title, String description) {
+    public Epic(String title, String description) {
         super(title, description);
         this.subtasks = new ArrayList<>();
         this.haveSubtasks = false;

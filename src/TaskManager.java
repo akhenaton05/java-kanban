@@ -1,34 +1,32 @@
 import java.util.*;
 
 public class TaskManager {
-    HashMap<Integer, Task> tasks = new HashMap<>();
-    HashMap<Integer, Epic> epics = new HashMap<>();
-    HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private HashMap<Integer, Task> tasks;
+    private HashMap<Integer, Epic> epics;
+    private HashMap<Integer, Subtask> subtasks;
+
+    public TaskManager() {
+        this.tasks = new HashMap<>();
+        this.epics = new HashMap<>();
+        this.subtasks = new HashMap<>();
+    }
 
     private int id = 1;
 
-
     //Получение списка задач
     public ArrayList<Task> showAllTasks() {
-        Collection<Task> values = tasks.values();
-        ArrayList<Task> taskList = new ArrayList<Task>(values);
-        return taskList;
+        return new ArrayList<>(tasks.values());
     }
 
     //Получение списка epics
     public ArrayList<Epic> showAllEpics() {
-        Collection<Epic> values = epics.values();
-        ArrayList<Epic> epicList = new ArrayList<Epic>(values);
-        return epicList;
+        return new ArrayList<Epic>(epics.values());
     }
 
     //Получение списка subtasks
     public ArrayList<Subtask> showAllSubtasks() {
-        Collection<Subtask> values = subtasks.values();
-        ArrayList<Subtask> subList = new ArrayList<Subtask>(values);
-        return subList;
+        return new ArrayList<Subtask>(subtasks.values());
     }
-
 
     //Получение Task по ID
     public Task getTaskById(int id) {
@@ -44,7 +42,6 @@ public class TaskManager {
     public Subtask getSubtaskById(int id) {
         return subtasks.get(id);
     }
-
 
     //Создание Task
     public void addTask(Task task) {
@@ -86,7 +83,6 @@ public class TaskManager {
         checkEpicStatusPriority();
     }
 
-
     //Проверка StatusPriority для Epic
     private void checkEpicStatusPriority() {
         for (Epic epic : epics.values()) {
@@ -124,7 +120,6 @@ public class TaskManager {
         }
     }
 
-
     //Обновление Таска
     public void updateTask(Task task) {
         tasks.put(task.getId(), task);
@@ -134,7 +129,7 @@ public class TaskManager {
     public void updateTask(Epic epic) {
         //Проверка на наличие сабтасков для обновляемого эпика
         Epic oldEpic = epics.get(epic.getId());
-        if (oldEpic.isHaveSubtasks()){
+        if (oldEpic.isHaveSubtasks()) {
             ArrayList<Integer> subList = oldEpic.getSubtasks();
             epics.put(epic.getId(), epic);
             epics.get(epic.getId()).setSubtasks(subList);
@@ -192,7 +187,7 @@ public class TaskManager {
     public void deleteAllSubtasks() {
         subtasks.clear();
         //Замена статусов Epic
-        for(Epic epic : epics.values()) {
+        for (Epic epic : epics.values()) {
             epic.setSubtasks(null);
             epic.setStatus(StatusPriority.NEW);
             epic.setHaveSubtasks(false);
@@ -244,4 +239,27 @@ public class TaskManager {
         checkEpicStatusPriority();
     }
 
+    public HashMap<Integer, Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(HashMap<Integer, Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    public HashMap<Integer, Epic> getEpics() {
+        return epics;
+    }
+
+    public void setEpics(HashMap<Integer, Epic> epics) {
+        this.epics = epics;
+    }
+
+    public HashMap<Integer, Subtask> getSubtasks() {
+        return subtasks;
+    }
+
+    public void setSubtasks(HashMap<Integer, Subtask> subtasks) {
+        this.subtasks = subtasks;
+    }
 }
