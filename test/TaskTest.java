@@ -8,7 +8,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskTest {
-    private TaskManager tManager = Managers.getDefault();;
+    private TaskManager tManager = Managers.getDefault();
+    ;
     private Task task = new Task("Name", "Description", StatusPriority.NEW);
 
     //Очистка списка после каждого теста
