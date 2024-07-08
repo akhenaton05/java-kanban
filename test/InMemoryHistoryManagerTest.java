@@ -1,3 +1,10 @@
+import historytracking.HistoryManager;
+import managing.Managers;
+import managing.TaskManager;
+import tasks.Epic;
+import tasks.StatusPriority;
+import tasks.Subtask;
+import tasks.Task;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -52,18 +59,24 @@ public class InMemoryHistoryManagerTest {
     @Test
     public void addingMoreThan10TasksToHistory() {
         //Добавление в список
-        for (int i = 0; i < 14; i++) {
+        for (int i = 1; i < 15; i++) {
             tManager.addTask(new Task("T", "D", StatusPriority.DONE));
         }
 
+        //System.out.println(tManager.showAllTasks());
+
         //Добавление в историю просмотров
-        for (int i = 0; i < 14; i++) {
+        for (int i = 1; i < 15; i++) {
+            //System.out.println(tManager.getTaskById(i));
             tManager.getTaskById(i);
         }
 
+        System.out.println(tManager.showAllTasks());
+        System.out.println(tManager.getHistory());
+        System.out.println("size " + tManager.getHistory().size());
         Assertions.assertTrue(tManager.getHistory().size() == 10, "В списке больше 10 задач");
         //Проверка перезаписи истории при tasks > 10
-        Assertions.assertEquals(tManager.getHistory().get(0).getId(), 4, "Перезапись работает неправильно");
+        Assertions.assertEquals(tManager.getHistory().get(0).getId(), 5, "Перезапись работает неправильно");
     }
 
 }

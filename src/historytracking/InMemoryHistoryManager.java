@@ -1,3 +1,7 @@
+package historytracking;
+
+import tasks.Task;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,12 +15,11 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void add(Task task) {
         if (historyList.size() >= 10) {
-            ArrayList<Task> tempHistoryList = new ArrayList<>(10);
-            for (int i = 1; i < 10; i++) {
-                tempHistoryList.add(historyList.get(i));
+            for (int i = 0; i < 9; i++) {
+                Task temp = historyList.get(i + 1);
+                historyList.set(i, temp);
             }
-            tempHistoryList.add(task);
-            historyList = tempHistoryList;
+            historyList.set(9, task);
         } else {
             historyList.add(task);
         }

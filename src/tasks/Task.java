@@ -1,3 +1,5 @@
+package tasks;
+
 public class Task {
     private String title;
     private String description;
@@ -49,7 +51,7 @@ public class Task {
 
     @Override
     public String toString() {
-        String result = String.format("Task{title='%s', description='%s', id='%d', status='%s'}", title, description, id, status);
+        String result = String.format("Tasks.Task{title='%s', description='%s', id='%d', status='%s'}", title, description, id, status);
         return result;
     }
 

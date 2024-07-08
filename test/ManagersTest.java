@@ -1,7 +1,8 @@
+import historytracking.HistoryManager;
+import managing.Managers;
+import managing.TaskManager;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ManagersTest {
 

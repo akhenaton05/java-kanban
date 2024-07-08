@@ -1,3 +1,9 @@
+package managing;
+
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
+
 import java.util.*;
 
 public interface TaskManager {
@@ -10,49 +16,49 @@ public interface TaskManager {
     //Получение списка subtasks
     ArrayList<Subtask> showAllSubtasks();
 
-    //Получение Task по ID
+    //Получение Tasks.Task по ID
     Task getTaskById(int id);
 
-    //Получение Epic по ID
+    //Получение Tasks.Epic по ID
     Epic getEpicById(int id);
 
-    //Получение Subtask по ID
+    //Получение Tasks.Subtask по ID
     Subtask getSubtaskById(int id);
 
-    //Создание Task
+    //Создание Tasks.Task
     void addTask(Task task);
 
-    //Создание Epic
+    //Создание Tasks.Epic
     void addTask(Epic epic);
 
-    //Создание Subtask
+    //Создание Tasks.Subtask
     void addTask(Subtask subtask);
 
     //Обновление Таска
     void updateTask(Task task);
 
-    //Обновление Epic
+    //Обновление Tasks.Epic
     void updateTask(Epic epic);
 
-    //Обновление Subtask
+    //Обновление Tasks.Subtask
     void updateTask(Subtask subtask);
 
-    //Получение всех подзадач Epic
+    //Получение всех подзадач Tasks.Epic
     ArrayList<Subtask> getEpicsSubtasks(int epidId);
 
     //Удаление всех задач
     void deleteAllTasks();
 
-    //Удаление всех Epic
+    //Удаление всех Tasks.Epic
     void deleteAllEpics();
 
     //Удаление всех Subtasks
     void deleteAllSubtasks();
 
-    //Удаление Task по ID
+    //Удаление Tasks.Task по ID
     void deleteTaskById(int id);
 
-    //Удаление Epic по ID
+    //Удаление Tasks.Epic по ID
     void deleteEpicById(int id);
 
     //Удаление Subtasks по ID

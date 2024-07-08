@@ -1,3 +1,8 @@
+import managing.Managers;
+import managing.TaskManager;
+import tasks.Epic;
+import tasks.StatusPriority;
+import tasks.Subtask;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
@@ -57,7 +62,7 @@ public class EpicTest {
         assertEquals(epic, epics.get(0), "Задачи не совпадают.");
     }
 
-    //Тесты с удалением Epic из списка
+    //Тесты с удалением Tasks.Epic из списка
     @Test
     public void deleteEpic() {
         //Удаление по ID

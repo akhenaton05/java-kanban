@@ -1,3 +1,5 @@
+package tasks;
+
 public class Subtask extends Task {
     private int epicId;
 
@@ -16,7 +18,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        String result = String.format("Subtask{description='%s', id='%d', epicId='%d', status='%s'}", this.getDescription(), this.getId(), epicId, this.getStatus());
+        String result = String.format("Tasks.Subtask{description='%s', id='%d', epicId='%d', status='%s'}", this.getDescription(), this.getId(), epicId, this.getStatus());
         return result;
     }
 }
