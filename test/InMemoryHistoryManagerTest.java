@@ -63,17 +63,11 @@ public class InMemoryHistoryManagerTest {
             tManager.addTask(new Task("T", "D", StatusPriority.DONE));
         }
 
-        //System.out.println(tManager.showAllTasks());
-
         //Добавление в историю просмотров
         for (int i = 1; i < 15; i++) {
-            //System.out.println(tManager.getTaskById(i));
             tManager.getTaskById(i);
         }
 
-        System.out.println(tManager.showAllTasks());
-        System.out.println(tManager.getHistory());
-        System.out.println("size " + tManager.getHistory().size());
         Assertions.assertTrue(tManager.getHistory().size() == 10, "В списке больше 10 задач");
         //Проверка перезаписи истории при tasks > 10
         Assertions.assertEquals(tManager.getHistory().get(0).getId(), 5, "Перезапись работает неправильно");
