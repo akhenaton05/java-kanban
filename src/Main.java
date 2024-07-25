@@ -1,6 +1,5 @@
-import historytracking.HistoryManager;
+
 import historytracking.InMemoryHistoryManager;
-import managing.InMemoryTaskManager;
 import managing.Managers;
 import managing.TaskManager;
 import tasks.Epic;
@@ -8,16 +7,11 @@ import tasks.StatusPriority;
 import tasks.Subtask;
 import tasks.Task;
 
-import java.util.List;
-import java.util.Scanner;
-
-import java.util.Scanner;
-
 public class Main {
 
     public static void main(String[] args) {
         TaskManager tManager = Managers.getDefault();
-        InMemoryHistoryManager hManager = new InMemoryHistoryManager();
+        //InMemoryHistoryManager hManager = new InMemoryHistoryManager();
 
         Task task1 = new Task("Сделать уроки", "Math", StatusPriority.IN_PROGRESS);
         Task task2 = new Task("Read the book", "DETECTIVE", StatusPriority.NEW);
