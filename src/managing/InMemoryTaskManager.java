@@ -44,21 +44,27 @@ public class InMemoryTaskManager implements TaskManager {
     //Получение Tasks.Task по ID
     @Override
     public Task getTaskById(int id) {
-        historyManager.add(tasks.get(id));
+        if (tasks.get(id) != null) {
+            historyManager.add(tasks.get(id));
+        }
         return tasks.get(id);
     }
 
     //Получение Tasks.Epic по ID
     @Override
     public Epic getEpicById(int id) {
-        historyManager.add(epics.get(id));
+        if (epics.get(id) != null) {
+            historyManager.add(epics.get(id));
+        }
         return epics.get(id);
     }
 
     //Получение Tasks.Subtask по ID
     @Override
     public Subtask getSubtaskById(int id) {
-        historyManager.add(subtasks.get(id));
+        if (subtasks.get(id) != null) {
+            historyManager.add(subtasks.get(id));
+        }
         return subtasks.get(id);
     }
 
@@ -201,19 +207,34 @@ public class InMemoryTaskManager implements TaskManager {
     //Удаление всех задач
     @Override
     public void deleteAllTasks() {
+        //Меняем ID тасков после удаления
+        for (Task temp : tasks.values()) {
+            temp.setId(-1);
+        }
         tasks.clear();
     }
 
     //Удаление всех Tasks.Epic
     @Override
     public void deleteAllEpics() {
+        //Меняем ID эпиков после удаления
+        for (Epic temp : epics.values()) {
+            temp.setId(-1);
+        }
         epics.clear();
-        subtasks.clear(); //Также решил удалить все сабтаски, т.к. без эпиков в них нету смысла
+        //Меняем ID сабтасков после удаления
+        for (Subtask temp : subtasks.values()) {
+            temp.setId(-1);
+        }
+        subtasks.clear();
     }
 
     //Удаление всех Subtasks
     @Override
     public void deleteAllSubtasks() {
+        for (Subtask temp : subtasks.values()) {
+            temp.setId(-1);
+        }
         subtasks.clear();
         //Замена статусов Tasks.Epic
         for (Epic epic : epics.values()) {
@@ -226,7 +247,11 @@ public class InMemoryTaskManager implements TaskManager {
     //Удаление Tasks.Task по ID
     @Override
     public void deleteTaskById(int id) {
+        Task temp = tasks.get(id);
         tasks.remove(id);
+        temp.setId(-1);
+        //Удаление из истории просмотра
+        historyManager.remove(id);
     }
 
     //Удаление Tasks.Epic по ID
@@ -237,26 +262,38 @@ public class InMemoryTaskManager implements TaskManager {
         //Проверка листов на null / empty
         if (subtaskList == null || subtaskList.isEmpty()) {
             epics.remove(id);
+            target.setId(-1);
+            //Удаление из истории просмотра
+            historyManager.remove(id);
             return;
         }
-        //Не нашел простого способа удалить сабтаски эпика из хэшмапы без ConcurrentError, сделал через итератор, но его еще не проходили по курсу
+        //Удаления сабтасков через итератор
         Iterator<Map.Entry<Integer, Subtask>> iterator = subtasks.entrySet().iterator();
         while (iterator.hasNext()) {
             int iterId = iterator.next().getKey();
             for (int targetId : subtaskList) {
                 if (targetId == iterId) {
+                    //Поменять айди удаляемых сабтасков
+                    subtasks.get(targetId).setId(-1);
                     iterator.remove();
+                    //Удаление из истории просмотра
+                    historyManager.remove(targetId);
                 }
             }
         }
+        target.setId(-1);
         epics.remove(id);
+        //Удаление из истории просмотра
+        historyManager.remove(id);
     }
 
     //Удаление Subtasks по ID
     @Override
     public void deleteSubtasksById(int id) {
         int subId = subtasks.get(id).getEpicId();
+        Subtask sub = subtasks.get(id);
         subtasks.remove(id);
+        sub.setId(-1);
         //Удаление subtask из списка эпика
         Epic epic = epics.get(subId);
         if (epic.isHaveSubtasks()) {
@@ -269,6 +306,8 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setHaveSubtasks(false);
         }
         checkEpicStatusPriority();
+        //Удаление из истории просмотра
+        historyManager.remove(id);
     }
 
     @Override

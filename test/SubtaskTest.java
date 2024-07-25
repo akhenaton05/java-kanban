@@ -102,4 +102,44 @@ public class SubtaskTest {
         Assertions.assertTrue((savedSubtask.getTitle()).equals(tManager.getSubtaskById(2).getTitle()));
         Assertions.assertTrue((savedSubtask.getEpicId()) == (tManager.getSubtaskById(2).getEpicId()));
     }
+
+    @Test
+    public void deletedSubtasksNotHavingIds() {
+        tManager.addTask(epic);
+        tManager.addTask(subtask);
+
+        int currentId = tManager.getSubtaskById(2).getId();
+        //Удаляем сабтаск
+        tManager.deleteSubtasksById(2);
+        int newId = subtask.getId();
+
+        Assertions.assertTrue(newId != currentId, "ID сабтаска остался таким же после удаления");
+
+        // Тестируем айди сабтаска через удаления эпика
+        tManager.addTask(subtask);
+        int newCurrentId = tManager.getSubtaskById(3).getId();
+
+        tManager.deleteEpicById(1);
+        int Id = subtask.getId();
+
+        Assertions.assertTrue(Id != newCurrentId, "ID сабтаска остался таким же после удаления эпика");
+
+        // Тестируем айди сабтаска через удаления всех подзадач
+        Epic tempEp = new Epic("e", "s");
+        tManager.addTask(tempEp);
+        Subtask savedSubtask1 = new Subtask("Name", "Description", StatusPriority.DONE, 4);
+        Subtask savedSubtask2 = new Subtask("Name", "Description", StatusPriority.DONE, 4);
+        Subtask savedSubtask3 = new Subtask("Name", "Description", StatusPriority.DONE, 4);
+        tManager.addTask(savedSubtask1);
+        tManager.addTask(savedSubtask2);
+        tManager.addTask(savedSubtask3);
+
+        List<Subtask> subList = tManager.showAllSubtasks();
+
+        tManager.deleteAllSubtasks();
+
+        for (Subtask temp : subList) {
+            Assertions.assertTrue(temp.getId() == -1, "ID сабтаска остался таким же после удаления всех сабтасков");
+        }
+    }
 }

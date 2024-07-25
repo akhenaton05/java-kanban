@@ -132,4 +132,27 @@ public class EpicTest {
         Assertions.assertTrue((savedEpic.getStatus()).equals(tManager.getEpicById(1).getStatus()));
         Assertions.assertTrue((savedEpic.getTitle()).equals(tManager.getEpicById(1).getTitle()));
     }
+
+    @Test
+    public void deletedEpicsNotHavingOldIds() {
+        tManager.addTask(epic);
+        Epic temp = tManager.getEpicById(1);
+
+        tManager.deleteEpicById(1);
+
+        Assertions.assertTrue(temp.getId() == -1, "ID эпика не поменялся");
+
+        //Проверка ID после удаления всех эпиков сразу
+        tManager.addTask(epic);
+        tManager.addTask(epic);
+        tManager.addTask(epic);
+
+        List<Epic> epicList = tManager.showAllEpics();
+
+        tManager.deleteAllEpics();
+
+        for (Epic tempEpic : epicList) {
+            Assertions.assertTrue(tempEpic.getId() == -1, "ID эпика не поменялся после полной очистки списка");
+        }
+    }
 }

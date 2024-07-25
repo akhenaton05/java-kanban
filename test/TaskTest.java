@@ -87,4 +87,37 @@ public class TaskTest {
         Assertions.assertTrue((savedTask.getStatus()).equals(tManager.getTaskById(1).getStatus()));
         Assertions.assertTrue((savedTask.getTitle()).equals(tManager.getTaskById(1).getTitle()));
     }
+
+    @Test
+    public void tasksIdsChangedAfterDeleted() {
+        tManager.addTask(task);
+        Task temp = tManager.getTaskById(1);
+
+        tManager.deleteTaskById(1);
+
+        Assertions.assertTrue(temp.getId() != 1, "ID таска не изменилось");
+
+        //Проверка после очистки всего списка сразу
+        tManager.addTask(task);
+        tManager.addTask(task);
+
+        List<Task> tempList = tManager.showAllTasks();
+
+        tManager.deleteAllTasks();
+
+        for (Task t : tempList) {
+            Assertions.assertTrue(t.getId() == -1, "ID таска не изменилось после очистки всего списка");
+        }
+    }
+
+    @Test
+    public void settingIdAfterAddingTask() {
+        tManager.addTask(task);
+        Task temp = tManager.getTaskById(1);
+        temp.setId(2);
+        List<Task> taskList = tManager.showAllTasks();
+
+        //ID таска поменяется с 1 на 2
+        Assertions.assertTrue(taskList.get(0).getId() == 2, "ID таска не изменилось после изменения сеттером");
+    }
 }
