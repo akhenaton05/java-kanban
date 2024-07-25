@@ -9,11 +9,12 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node node;
     private Node<Task> head;
     private Node<Task> tail;
-    private int size = 0;
+    private int size;
 
 
     public InMemoryHistoryManager() {
         this.historyMap = new HashMap<>();
+        this.size = 0;
     }
 
     public Node linkLast(Task task) {
