@@ -44,28 +44,31 @@ public class InMemoryTaskManager implements TaskManager {
     //Получение Tasks.Task по ID
     @Override
     public Task getTaskById(int id) {
-        if (tasks.get(id) != null) {
-            historyManager.add(tasks.get(id));
+        Task task = tasks.get(id);
+        if (task != null) {
+            historyManager.add(task);
         }
-        return tasks.get(id);
+        return task;
     }
 
     //Получение Tasks.Epic по ID
     @Override
     public Epic getEpicById(int id) {
-        if (epics.get(id) != null) {
-            historyManager.add(epics.get(id));
+        Epic epic = epics.get(id);
+        if (epic != null) {
+            historyManager.add(epic);
         }
-        return epics.get(id);
+        return epic;
     }
 
     //Получение Tasks.Subtask по ID
     @Override
     public Subtask getSubtaskById(int id) {
-        if (subtasks.get(id) != null) {
-            historyManager.add(subtasks.get(id));
+        Subtask subtask = subtasks.get(id);
+        if (subtask != null) {
+            historyManager.add(subtask);
         }
-        return subtasks.get(id);
+        return subtask;
     }
 
     //Создание Tasks.Task
@@ -207,34 +210,19 @@ public class InMemoryTaskManager implements TaskManager {
     //Удаление всех задач
     @Override
     public void deleteAllTasks() {
-        //Меняем ID тасков после удаления
-        for (Task temp : tasks.values()) {
-            temp.setId(-1);
-        }
         tasks.clear();
     }
 
     //Удаление всех Tasks.Epic
     @Override
     public void deleteAllEpics() {
-        //Меняем ID эпиков после удаления
-        for (Epic temp : epics.values()) {
-            temp.setId(-1);
-        }
         epics.clear();
-        //Меняем ID сабтасков после удаления
-        for (Subtask temp : subtasks.values()) {
-            temp.setId(-1);
-        }
         subtasks.clear();
     }
 
     //Удаление всех Subtasks
     @Override
     public void deleteAllSubtasks() {
-        for (Subtask temp : subtasks.values()) {
-            temp.setId(-1);
-        }
         subtasks.clear();
         //Замена статусов Tasks.Epic
         for (Epic epic : epics.values()) {

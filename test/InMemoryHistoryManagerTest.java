@@ -58,12 +58,10 @@ public class InMemoryHistoryManagerTest {
 
     @Test
     public void addingMoreThan10TasksToHistory() {
-        //Добавление в список
         for (int i = 1; i < 15; i++) {
             tManager.addTask(new Task("T", "D", StatusPriority.DONE));
         }
 
-        //Добавление в историю просмотров
         for (int i = 1; i < 15; i++) {
             tManager.getTaskById(i);
         }
@@ -73,13 +71,11 @@ public class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void DuplicatedTasksOverwritten() {
-        //Добавление в список
+    public void duplicatedTasksOverwritten() {
         for (int i = 1; i < 6; i++) {
             tManager.addTask(new Task("T", "D", StatusPriority.DONE));
         }
 
-        //Добавление в историю просмотров
         for (int i = 1; i < 6; i++) {
             tManager.getTaskById(i);
         }
@@ -122,13 +118,36 @@ public class InMemoryHistoryManagerTest {
     }
 
     @Test
+    public void addDeleteOperationsKeepingRightOrder() {
+        //Добавление в список
+        for (int i = 1; i < 6; i++) {
+            tManager.addTask(new Task("T", "D", StatusPriority.DONE));
+        }
+
+        tManager.getTaskById(4);
+        tManager.getTaskById(2);
+        tManager.deleteTaskById(4);
+        tManager.getTaskById(3);
+        tManager.getTaskById(2);
+        tManager.getTaskById(1);
+        tManager.deleteTaskById(2);
+        tManager.getTaskById(5);
+
+        List<Task> historyList = tManager.getHistory();
+
+        //Проверяем порядок элементов после операций удаления\перезаписи
+        Assertions.assertTrue(historyList.get(historyList.size() - 1).getId() == 5, "Порядом не соблюден. Последний элемент не совпадает");
+        Assertions.assertTrue(historyList.get(0).getId() == 3, "Порядом не соблюден. Первый элемент не совпадает");
+        Assertions.assertTrue(historyList.get(1).getId() == 1, "Порядом не соблюден. 2й элемент не совпадает");
+
+    }
+
+    @Test
     public void epicAndHisSubtasksDeletedFromHistoryList() {
-        //Добавление epic & subtasks в список
         tManager.addTask(new Epic("sdass", "s"));
         tManager.addTask(new Subtask("a", "s", StatusPriority.DONE, 1));
         tManager.addTask(new Subtask("s", "e", StatusPriority.DONE, 1));
 
-        //Добавление в историю просмотров
         tManager.getEpicById(1);
         tManager.getSubtaskById(2);
         tManager.getSubtaskById(3);

@@ -9,7 +9,6 @@ public class Main {
 
     public static void main(String[] args) {
         TaskManager tManager = Managers.getDefault();
-        //InMemoryHistoryManager hManager = new InMemoryHistoryManager();
 
         Task task1 = new Task("Сделать уроки", "Math", StatusPriority.IN_PROGRESS);
         Task task2 = new Task("Read the book", "DETECTIVE", StatusPriority.NEW);
@@ -66,8 +65,6 @@ public class Main {
         //Удаление эпика с 2 подзадачами
         tManager.deleteEpicById(3);
         System.out.println(tManager.getHistory());
-
     }
-
 }
 

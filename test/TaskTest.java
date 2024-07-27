@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskTest {
     private TaskManager tManager = Managers.getDefault();
-    ;
     private Task task = new Task("Name", "Description", StatusPriority.NEW);
 
     //Очистка списка после каждого теста
@@ -86,28 +85,6 @@ public class TaskTest {
         Assertions.assertTrue((savedTask.getDescription()).equals(tManager.getTaskById(1).getDescription()));
         Assertions.assertTrue((savedTask.getStatus()).equals(tManager.getTaskById(1).getStatus()));
         Assertions.assertTrue((savedTask.getTitle()).equals(tManager.getTaskById(1).getTitle()));
-    }
-
-    @Test
-    public void tasksIdsChangedAfterDeleted() {
-        tManager.addTask(task);
-        Task temp = tManager.getTaskById(1);
-
-        tManager.deleteTaskById(1);
-
-        Assertions.assertTrue(temp.getId() != 1, "ID таска не изменилось");
-
-        //Проверка после очистки всего списка сразу
-        tManager.addTask(task);
-        tManager.addTask(task);
-
-        List<Task> tempList = tManager.showAllTasks();
-
-        tManager.deleteAllTasks();
-
-        for (Task t : tempList) {
-            Assertions.assertTrue(t.getId() == -1, "ID таска не изменилось после очистки всего списка");
-        }
     }
 
     @Test
