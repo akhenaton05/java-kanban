@@ -325,4 +325,8 @@ public class InMemoryTaskManager implements TaskManager {
     public int getCurrentId() {
         return this.id;
     }
+
+    public void setCurrentId(int id) {
+        this.id = id;
+    }
 }

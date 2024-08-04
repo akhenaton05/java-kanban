@@ -1,5 +1,7 @@
 package tasks;
 
+import managing.TaskType;
+
 public class Subtask extends Task {
     private int epicId;
 
@@ -14,6 +16,11 @@ public class Subtask extends Task {
 
     public void setEpicId(int epicId) {
         this.epicId = epicId;
+    }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.SUBTASK;
     }
 
     @Override

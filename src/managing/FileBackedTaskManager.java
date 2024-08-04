@@ -13,122 +13,75 @@ import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private File file;
+    private static final String HEADER = "id,type,name,status,description,epicid";
 
     public FileBackedTaskManager(File file) {
         this.file = file;
     }
 
     private void save() {
-        List<String> saveList = new ArrayList<>(List.of("id,type,name,status,description,epicid"));
+        List<String> saveList = new ArrayList<>();
+        saveList.add(HEADER);
         List<Task> taskList = super.showAllTasks();
-        if (!taskList.isEmpty()) {
-            for (Task task : taskList) {
-                saveList.add(toString(task));
-            }
+        for (Task task : taskList) {
+            saveList.add(toString(task));
         }
         List<Epic> epicList = super.showAllEpics();
-        if (!epicList.isEmpty()) {
-            for (Epic epic : epicList) {
-                saveList.add(toString(epic));
-            }
+        for (Epic epic : epicList) {
+            saveList.add(toString(epic));
         }
         List<Subtask> subtaskList = super.showAllSubtasks();
-        if (!subtaskList.isEmpty()) {
-            for (Subtask subtask : subtaskList) {
-                saveList.add(toString(subtask));
-            }
+        for (Subtask subtask : subtaskList) {
+            saveList.add(toString(subtask));
         }
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
             for (String s : saveList) {
                 bw.write(s + "\n");
             }
         } catch (IOException e) {
-            throw new ManagerSaveException("IOException caught");
+            throw new ManagerSaveException("IOException caught", e);
         }
     }
 
     private String toString(Task task) {
         StringBuilder sb = new StringBuilder();
         sb.append(task.getId() + ",");
-        sb.append(TaskType.TASK + ",");
+        sb.append(task.getType() + ",");
         sb.append(task.getTitle() + ",");
         sb.append(task.getStatus() + ",");
         sb.append(task.getDescription() + ",");
-        return sb.toString();
-    }
 
-    private String toString(Epic task) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(task.getId() + ",");
-        sb.append(TaskType.EPIC + ",");
-        sb.append(task.getTitle() + ",");
-        sb.append(task.getStatus() + ",");
-        sb.append(task.getDescription() + ",");
-        return sb.toString();
-    }
+        if (task.getType() == TaskType.SUBTASK) {
+            sb.append(((Subtask)task).getEpicId() + ",");
+        }
 
-    private String toString(Subtask task) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(task.getId() + ",");
-        sb.append(TaskType.SUBTASK + ",");
-        sb.append(task.getTitle() + ",");
-        sb.append(task.getStatus() + ",");
-        sb.append(task.getDescription() + ",");
-        sb.append(task.getEpicId() + ",");
         return sb.toString();
     }
 
     private Task fromString(String value) {
         String[] array = value.split(",");
-        if (TaskType.valueOf(array[1]) == TaskType.TASK) {
-            if (StatusPriority.valueOf(array[3]) == StatusPriority.NEW) {
-                Task tempTask = new Task(array[2], array[4], StatusPriority.NEW);
-                tempTask.setId(Integer.parseInt(array[0]));
-                return tempTask;
-            } else if (StatusPriority.valueOf(array[3]) == StatusPriority.IN_PROGRESS) {
-                Task tempTask = new Task(array[2], array[4], StatusPriority.IN_PROGRESS);
-                tempTask.setId(Integer.parseInt(array[0]));
-                return tempTask;
-            } else {
-                Task tempTask = new Task(array[2], array[4], StatusPriority.DONE);
-                tempTask.setId(Integer.parseInt(array[0]));
-                return tempTask;
-            }
-        } else if (TaskType.valueOf(array[1]) == TaskType.EPIC) {
-            if (StatusPriority.valueOf(array[3]) == StatusPriority.NEW) {
-                Epic tempEpic = new Epic(array[2], array[4]);
-                tempEpic.setStatus(StatusPriority.NEW);
-                tempEpic.setId(Integer.parseInt(array[0]));
-                tempEpic.setHaveSubtasks(true);
-                return tempEpic;
-            } else if (StatusPriority.valueOf(array[3]) == StatusPriority.IN_PROGRESS) {
-                Epic tempEpic = new Epic(array[2], array[4]);
-                tempEpic.setStatus(StatusPriority.IN_PROGRESS);
-                tempEpic.setId(Integer.parseInt(array[0]));
-                tempEpic.setHaveSubtasks(true);
-                return tempEpic;
-            } else {
-                Epic tempEpic = new Epic(array[2], array[4]);
-                tempEpic.setStatus(StatusPriority.DONE);
-                tempEpic.setId(Integer.parseInt(array[0]));
-                tempEpic.setHaveSubtasks(true);
-                return tempEpic;
-            }
-        } else {
-            if (StatusPriority.valueOf(array[3]) == StatusPriority.NEW) {
-                Subtask tempSubtask = new Subtask(array[2], array[4], StatusPriority.NEW, Integer.parseInt(array[5]));
-                tempSubtask.setId(Integer.parseInt(array[0]));
-                return tempSubtask;
-            } else if (StatusPriority.valueOf(array[3]) == StatusPriority.IN_PROGRESS) {
-                Subtask tempSubtask = new Subtask(array[2], array[4], StatusPriority.IN_PROGRESS, Integer.parseInt(array[5]));
-                tempSubtask.setId(Integer.parseInt(array[0]));
-                return tempSubtask;
-            } else if (StatusPriority.valueOf(array[3]) == StatusPriority.DONE) {
-                Subtask tempSubtask = new Subtask(array[2], array[4], StatusPriority.DONE, Integer.parseInt(array[5]));
-                tempSubtask.setId(Integer.parseInt(array[0]));
-                return tempSubtask;
-            }
+        int id = Integer.parseInt(array[0]);
+        TaskType typeName = TaskType.valueOf(array[1]);
+        String title = array[2];
+        StatusPriority status = StatusPriority.valueOf(array[3]);
+        String description = array[4];
+
+        if (typeName == TaskType.TASK) {
+            Task tempTask = new Task(title, description, status);
+            tempTask.setId(id);
+            return tempTask;
+        } else if (typeName == TaskType.EPIC) {
+            Epic tempEpic = new Epic(title, description);
+            tempEpic.setId(id);
+            tempEpic.setHaveSubtasks(true);
+            tempEpic.setStatus(status);
+            return tempEpic;
+        } else if (typeName == TaskType.SUBTASK) {
+            Subtask tempSubtask = new Subtask(title, description, status, Integer.parseInt(array[5]));
+            tempSubtask.setId(id);
+            return tempSubtask;
         }
+
         return null;
     }
 
@@ -140,7 +93,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 stringList.add(br.readLine());
             }
         } catch (IOException e) {
-            throw new ManagerSaveException("IOException caught");
+            throw new ManagerSaveException("IOException caught", e);
         }
         stringList.remove(0);
         List<Task> loadedTaskList = new ArrayList<>();
@@ -148,34 +101,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             loadedTaskList.add(fManager.fromString(s));
         }
         for (Task task : loadedTaskList) {
-            if (task.getClass() == Task.class) {
+            if (task.getType() == TaskType.TASK) {
                 HashMap<Integer, Task> map = fManager.getTasks();
                 map.put(task.getId(), task);
             }
-            if (task.getClass() == Epic.class) {
+            if (task.getType() == TaskType.EPIC) {
                 HashMap<Integer, Epic> map = fManager.getEpics();
                 map.put(task.getId(), (Epic) task);
             }
-            if (task.getClass() == Subtask.class) {
+            if (task.getType() == TaskType.SUBTASK) {
                 HashMap<Integer, Subtask> map = fManager.getSubtasks();
+                Epic epic = fManager.getEpicById(((Subtask) task).getEpicId());
+                ArrayList<Integer> subIds = epic.getSubtasks();
+                subIds.add(task.getId());
                 map.put(task.getId(), (Subtask) task);
             }
         }
-        fManager.setEpicsWithSubtasks();
+        int lastId = loadedTaskList.get(loadedTaskList.size() - 1).getId();
+        fManager.setCurrentId(lastId + 1);
         return fManager;
-    }
-
-    private void setEpicsWithSubtasks() {
-        HashMap<Integer, Epic> epicMap = this.getEpics();
-        HashMap<Integer, Subtask> subtaskMap = this.getSubtasks();
-        for (Epic epic : epicMap.values()) {
-            ArrayList<Integer> epicsSubs = epic.getSubtasks();
-            for (Subtask subtask : subtaskMap.values()) {
-                if (epic.getId() == subtask.getEpicId()) {
-                    epicsSubs.add(subtask.getId());
-                }
-            }
-        }
     }
 
     @Override
@@ -274,8 +218,83 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         FileBackedTaskManager newManager = FileBackedTaskManager.loadFromFile(tempFile);
 
-        System.out.println(newManager.showAllTasks());
-        System.out.println(newManager.showAllEpics());
-        System.out.println(newManager.showAllSubtasks());
+        System.out.println("Проверка идентификатора экземпляров Manager: " + (newManager.getCurrentId() == fManager.getCurrentId()));
+
+        boolean taskResult = true;
+        if (fManager.showAllTasks().size() != newManager.showAllTasks().size()) {
+            taskResult = false;
+        }
+        int size = fManager.showAllTasks().size();
+        for (int i = 0; i < size - 1; i++) {
+            Task t1 = fManager.showAllTasks().get(i);
+            Task t2 = newManager.showAllTasks().get(i);
+            int id1 = t1.getId();
+            int id2 = t2.getId();
+            String title1 = t1.getTitle();
+            String title2 = t2.getTitle();
+            String description1 = t1.getDescription();
+            String description2 = t2.getDescription();
+            StatusPriority status1 = t1.getStatus();
+            StatusPriority status2 = t2.getStatus();
+
+            if (!(id1 == id2 && title1.equals(title2) && description1.equals(description2)
+                    && status1 == status2)) {
+                taskResult = false;
+                break;
+            }
+        }
+        System.out.println("Проверка тасков экземпляров Manager: " + taskResult);
+
+        boolean epicResult = true;
+        if (fManager.showAllEpics().size() != newManager.showAllEpics().size()) {
+            epicResult = false;
+        }
+        int epicSize = fManager.showAllEpics().size();
+        for (int i = 0; i < epicSize - 1; i++) {
+            Epic t1 = fManager.showAllEpics().get(i);
+            Epic t2 = newManager.showAllEpics().get(i);
+            int id1 = t1.getId();
+            int id2 = t2.getId();
+            String title1 = t1.getTitle();
+            String title2 = t2.getTitle();
+            String description1 = t1.getDescription();
+            String description2 = t2.getDescription();
+            StatusPriority status1 = t1.getStatus();
+            StatusPriority status2 = t2.getStatus();
+
+            if (!(id1 == id2 && title1.equals(title2) && description1.equals(description2)
+                    && status1 == status2)) {
+                epicResult = false;
+                break;
+            }
+        }
+        System.out.println("Проверка эпиков экземпляров Manager: " + epicResult);
+
+        boolean subtaskResult = true;
+        if (fManager.showAllSubtasks().size() != newManager.showAllSubtasks().size()) {
+            subtaskResult = false;
+        }
+        int subtaskSize = fManager.showAllSubtasks().size();
+        for (int i = 0; i < subtaskSize - 1; i++) {
+            Subtask t1 = fManager.showAllSubtasks().get(i);
+            Subtask t2 = newManager.showAllSubtasks().get(i);
+            int id1 = t1.getId();
+            int id2 = t2.getId();
+            String title1 = t1.getTitle();
+            String title2 = t2.getTitle();
+            String description1 = t1.getDescription();
+            String description2 = t2.getDescription();
+            StatusPriority status1 = t1.getStatus();
+            StatusPriority status2 = t2.getStatus();
+            int eId1 = t1.getEpicId();
+            int eId2 = t2.getEpicId();
+
+            if (!(id1 == id2 && title1.equals(title2) && description1.equals(description2)
+                    && status1 == status2 && eId1 == eId2)) {
+                subtaskResult = false;
+                break;
+            }
+        }
+        System.out.println("Проверка сабтасков экземпляров Manager: " + subtaskResult);
     }
 }

@@ -1,5 +1,7 @@
 package tasks;
 
+import managing.TaskType;
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
@@ -27,6 +29,11 @@ public class Epic extends Task {
 
     public void setHaveSubtasks(boolean haveSubtasks) {
         this.haveSubtasks = haveSubtasks;
+    }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC;
     }
 
     @Override
