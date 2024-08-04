@@ -44,22 +44,25 @@ public class InMemoryTaskManager implements TaskManager {
     //Получение Tasks.Task по ID
     @Override
     public Task getTaskById(int id) {
-        historyManager.add(tasks.get(id));
-        return tasks.get(id);
+        Task task = tasks.get(id);
+        historyManager.add(task);
+        return task;
     }
 
     //Получение Tasks.Epic по ID
     @Override
     public Epic getEpicById(int id) {
-        historyManager.add(epics.get(id));
-        return epics.get(id);
+        Epic epic = epics.get(id);
+        historyManager.add(epic);
+        return epic;
     }
 
     //Получение Tasks.Subtask по ID
     @Override
     public Subtask getSubtaskById(int id) {
-        historyManager.add(subtasks.get(id));
-        return subtasks.get(id);
+        Subtask subtask = subtasks.get(id);
+        historyManager.add(subtask);
+        return subtask;
     }
 
     //Создание Tasks.Task
@@ -208,7 +211,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllEpics() {
         epics.clear();
-        subtasks.clear(); //Также решил удалить все сабтаски, т.к. без эпиков в них нету смысла
+        subtasks.clear();
     }
 
     //Удаление всех Subtasks
@@ -226,7 +229,11 @@ public class InMemoryTaskManager implements TaskManager {
     //Удаление Tasks.Task по ID
     @Override
     public void deleteTaskById(int id) {
+        Task temp = tasks.get(id);
         tasks.remove(id);
+        temp.setId(-1);
+        //Удаление из истории просмотра
+        historyManager.remove(id);
     }
 
     //Удаление Tasks.Epic по ID
@@ -237,26 +244,38 @@ public class InMemoryTaskManager implements TaskManager {
         //Проверка листов на null / empty
         if (subtaskList == null || subtaskList.isEmpty()) {
             epics.remove(id);
+            target.setId(-1);
+            //Удаление из истории просмотра
+            historyManager.remove(id);
             return;
         }
-        //Не нашел простого способа удалить сабтаски эпика из хэшмапы без ConcurrentError, сделал через итератор, но его еще не проходили по курсу
+        //Удаления сабтасков через итератор
         Iterator<Map.Entry<Integer, Subtask>> iterator = subtasks.entrySet().iterator();
         while (iterator.hasNext()) {
             int iterId = iterator.next().getKey();
             for (int targetId : subtaskList) {
                 if (targetId == iterId) {
+                    //Поменять айди удаляемых сабтасков
+                    subtasks.get(targetId).setId(-1);
                     iterator.remove();
+                    //Удаление из истории просмотра
+                    historyManager.remove(targetId);
                 }
             }
         }
+        target.setId(-1);
         epics.remove(id);
+        //Удаление из истории просмотра
+        historyManager.remove(id);
     }
 
     //Удаление Subtasks по ID
     @Override
     public void deleteSubtasksById(int id) {
         int subId = subtasks.get(id).getEpicId();
+        Subtask sub = subtasks.get(id);
         subtasks.remove(id);
+        sub.setId(-1);
         //Удаление subtask из списка эпика
         Epic epic = epics.get(subId);
         if (epic.isHaveSubtasks()) {
@@ -269,6 +288,8 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setHaveSubtasks(false);
         }
         checkEpicStatusPriority();
+        //Удаление из истории просмотра
+        historyManager.remove(id);
     }
 
     @Override
@@ -303,5 +324,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int getCurrentId() {
         return this.id;
+    }
+
+    public void setCurrentId(int id) {
+        this.id = id;
     }
 }

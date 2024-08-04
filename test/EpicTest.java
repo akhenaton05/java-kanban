@@ -40,7 +40,6 @@ public class EpicTest {
         //Добавляем savedEpic ID в список сабтаска epic
         ArrayList<Integer> epicIds = epic.getSubtasks();
         epicIds.add(savedEpic.getId());
-        //Получаем список сабтасков для epic
         ArrayList<Subtask> subtasks = tManager.getEpicsSubtasks(1);
         //Проверка на отсутствите savedEpic в сабтасках epic (2й элемент savedEpic - должен быть null)
         Assertions.assertNull(subtasks.get(1));
@@ -48,7 +47,7 @@ public class EpicTest {
 
     @Test
     public void addNewEpic() {
-        tManager.addTask(epic); // id = 1
+        tManager.addTask(epic);
         final int epicId = epic.getId();
         final Epic savedEpic = tManager.getEpicById(epicId);
 
@@ -62,7 +61,6 @@ public class EpicTest {
         assertEquals(epic, epics.get(0), "Задачи не совпадают.");
     }
 
-    //Тесты с удалением Tasks.Epic из списка
     @Test
     public void deleteEpic() {
         //Удаление по ID
@@ -131,5 +129,19 @@ public class EpicTest {
         Assertions.assertTrue((savedEpic.getDescription()).equals(tManager.getEpicById(1).getDescription()));
         Assertions.assertTrue((savedEpic.getStatus()).equals(tManager.getEpicById(1).getStatus()));
         Assertions.assertTrue((savedEpic.getTitle()).equals(tManager.getEpicById(1).getTitle()));
+    }
+
+    @Test
+    public void epicNotHavingDeletedSubtasksIds() {
+        tManager.addTask(epic);
+        tManager.addTask(subtask);
+
+        ArrayList<Integer> epicLists = epic.getSubtasks();
+
+        Assertions.assertTrue(epicLists.size() == 1, "Эпик не содежит все ID сабтасков");
+
+        tManager.deleteSubtasksById(2);
+
+        Assertions.assertTrue(epicLists.size() == 0, "Удаленный ID сабтаска все еще остался в списке сабтасков эпика");
     }
 }

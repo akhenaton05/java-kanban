@@ -1,5 +1,7 @@
 package tasks;
 
+import managing.TaskType;
+
 public class Task {
     private String title;
     private String description;
@@ -15,6 +17,10 @@ public class Task {
     public Task(String title, String description) {
         this.title = title;
         this.description = description;
+    }
+
+    public Task() {
+
     }
 
     public String getTitle() {
@@ -47,6 +53,10 @@ public class Task {
 
     public void setStatus(StatusPriority status) {
         this.status = status;
+    }
+
+    public TaskType getType() {
+        return TaskType.TASK;
     }
 
     @Override

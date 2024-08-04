@@ -58,7 +58,6 @@ public class SubtaskTest {
         assertEquals(subtask, subtasks.get(0), "Задачи не совпадают.");
     }
 
-    //Тесты с удалением подзадач из списка
     @Test
     public void deleteSubtasks() {
         //Удаление по ID

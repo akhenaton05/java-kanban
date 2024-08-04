@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskTest {
     private TaskManager tManager = Managers.getDefault();
-    ;
     private Task task = new Task("Name", "Description", StatusPriority.NEW);
 
     //Очистка списка после каждого теста
@@ -86,5 +85,16 @@ public class TaskTest {
         Assertions.assertTrue((savedTask.getDescription()).equals(tManager.getTaskById(1).getDescription()));
         Assertions.assertTrue((savedTask.getStatus()).equals(tManager.getTaskById(1).getStatus()));
         Assertions.assertTrue((savedTask.getTitle()).equals(tManager.getTaskById(1).getTitle()));
+    }
+
+    @Test
+    public void settingIdAfterAddingTask() {
+        tManager.addTask(task);
+        Task temp = tManager.getTaskById(1);
+        temp.setId(2);
+        List<Task> taskList = tManager.showAllTasks();
+
+        //ID таска поменяется с 1 на 2
+        Assertions.assertTrue(taskList.get(0).getId() == 2, "ID таска не изменилось после изменения сеттером");
     }
 }
