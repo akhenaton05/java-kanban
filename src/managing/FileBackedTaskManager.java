@@ -102,29 +102,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
         int maxId = 0;
         for (Task task : loadedTaskList) {
+            if (task.getId() > maxId) {
+                maxId = task.getId();
+            }
             if (task.getType() == TaskType.TASK) {
                 HashMap<Integer, Task> map = fManager.getTasks();
                 map.put(task.getId(), task);
-                if (task.getId() > maxId) {
-                    maxId = task.getId();
-                }
-            }
-            if (task.getType() == TaskType.EPIC) {
+            } else if (task.getType() == TaskType.EPIC) {
                 HashMap<Integer, Epic> map = fManager.getEpics();
                 map.put(task.getId(), (Epic) task);
-                if (task.getId() > maxId) {
-                    maxId = task.getId();
-                }
-            }
-            if (task.getType() == TaskType.SUBTASK) {
+            } else {
                 HashMap<Integer, Subtask> map = fManager.getSubtasks();
-                Epic epic = fManager.getEpicById(((Subtask) task).getEpicId());
+                Epic epic = fManager.getEpics().get(((Subtask)task).getEpicId());
                 ArrayList<Integer> subIds = epic.getSubtasks();
                 subIds.add(task.getId());
                 map.put(task.getId(), (Subtask) task);
-                if (task.getId() > maxId) {
-                    maxId = task.getId();
-                }
             }
         }
         fManager.setCurrentId(maxId + 1);
