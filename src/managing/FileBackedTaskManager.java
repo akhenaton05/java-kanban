@@ -52,7 +52,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         sb.append(task.getDescription() + ",");
 
         if (task.getType() == TaskType.SUBTASK) {
-            sb.append(((Subtask)task).getEpicId() + ",");
+            sb.append(((Subtask) task).getEpicId() + ",");
         }
 
         return sb.toString();
@@ -100,14 +100,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         for (String s : stringList) {
             loadedTaskList.add(fManager.fromString(s));
         }
+        int maxId = 0;
         for (Task task : loadedTaskList) {
             if (task.getType() == TaskType.TASK) {
                 HashMap<Integer, Task> map = fManager.getTasks();
                 map.put(task.getId(), task);
+                if (task.getId() > maxId) {
+                    maxId = task.getId();
+                }
             }
             if (task.getType() == TaskType.EPIC) {
                 HashMap<Integer, Epic> map = fManager.getEpics();
                 map.put(task.getId(), (Epic) task);
+                if (task.getId() > maxId) {
+                    maxId = task.getId();
+                }
             }
             if (task.getType() == TaskType.SUBTASK) {
                 HashMap<Integer, Subtask> map = fManager.getSubtasks();
@@ -115,10 +122,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 ArrayList<Integer> subIds = epic.getSubtasks();
                 subIds.add(task.getId());
                 map.put(task.getId(), (Subtask) task);
+                if (task.getId() > maxId) {
+                    maxId = task.getId();
+                }
             }
         }
-        int lastId = loadedTaskList.get(loadedTaskList.size() - 1).getId();
-        fManager.setCurrentId(lastId + 1);
+        fManager.setCurrentId(maxId + 1);
         return fManager;
     }
 
