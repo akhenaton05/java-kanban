@@ -279,9 +279,3 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         System.out.println(newManager.showAllSubtasks());
     }
 }
-
-class ManagerSaveException extends RuntimeException {
-    public ManagerSaveException(String message) {
-        super(message);
-    }
-}
