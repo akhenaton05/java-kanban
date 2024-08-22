@@ -6,13 +6,17 @@ import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskTest {
     private TaskManager tManager = Managers.getDefault();
-    private Task task = new Task("Name", "Description", StatusPriority.NEW);
+    private LocalDateTime now = LocalDateTime.now();
+    private Duration duration = Duration.ofMinutes(30);
+    private Task task = new Task("Name", "Description", StatusPriority.NEW, now,  duration);
 
     //Очистка списка после каждого теста
     @AfterEach
@@ -24,7 +28,7 @@ public class TaskTest {
     @Test
     public void equalTasks() {
         tManager.addTask(task);
-        Task savedTask = new Task("Name!", "Description!", StatusPriority.DONE);
+        Task savedTask = new Task("Name!", "Description!", StatusPriority.DONE, now.plus(Duration.ofMinutes(31)), duration);
         savedTask.setId(1);
         Assertions.assertEquals(task, savedTask, "Задачи не совпадают.");
     }
@@ -55,7 +59,7 @@ public class TaskTest {
         Assertions.assertTrue(tManager.showAllTasks().isEmpty());
 
         //Удаление через очистку всего списка
-        Task savedTask = new Task("Name!", "Description!", StatusPriority.DONE);
+        Task savedTask = new Task("Name!", "Description!", StatusPriority.DONE, now, duration);
 
         tManager.addTask(task);
         tManager.addTask(savedTask);
@@ -68,7 +72,7 @@ public class TaskTest {
     public void equalsByGettingById() {
         tManager.addTask(task);
         Task t = tManager.getTaskById(1);
-        Task savedTask = new Task("Name", "Description", StatusPriority.DONE);
+        Task savedTask = new Task("Name", "Description", StatusPriority.DONE, now.plus(Duration.ofMinutes(354)), duration);
         savedTask.setId(1);
 
         Assertions.assertEquals(t, savedTask, "Не равны по Id");
@@ -77,7 +81,7 @@ public class TaskTest {
     @Test
     public void equalsByUpdating() {
         tManager.addTask(task);
-        Task savedTask = new Task("New Name", "New Description", StatusPriority.NEW);
+        Task savedTask = new Task("New Name", "New Description", StatusPriority.NEW, now.plus(Duration.ofDays(1)), duration);
         savedTask.setId(1);
         tManager.updateTask(savedTask);
 

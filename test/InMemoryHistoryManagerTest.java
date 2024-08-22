@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class InMemoryHistoryManagerTest {
     private TaskManager tManager = Managers.getDefault();
     private HistoryManager hManager = Managers.getDefaultHistory();
+    private LocalDateTime now = LocalDateTime.now();
+    private Duration duration = Duration.ofMinutes(30);
 
     @AfterEach
     public void afterEach() {
@@ -26,18 +30,18 @@ public class InMemoryHistoryManagerTest {
 
     @Test
     public void add() {
-        Task task = new Task("Name", "Description", StatusPriority.NEW);
+        Task task = new Task("Name", "Description", StatusPriority.NEW, now, duration);
         hManager.add(task);
         final List<Task> history = hManager.getHistory();
-        assertNotNull(history, "История не пустая.");
-        assertEquals(1, history.size(), "История не пустая.");
+        assertNotNull(history, "История пустая.");
+        assertEquals(1, history.size(), "История пустая.");
     }
 
     @Test
     public void addingToHistoryCorrectly() {
-        Task task = new Task("Name", "Description", StatusPriority.NEW);
+        Task task = new Task("Name", "Description", StatusPriority.NEW, now , duration);
         Epic epic = new Epic("Name", "Description");
-        Subtask subtask = new Subtask("Name", "Description", StatusPriority.NEW, 2);
+        Subtask subtask = new Subtask("Name", "Description", StatusPriority.NEW, 2, now.plus(Duration.ofDays(1)), duration);
         tManager.addTask(task);
         tManager.addTask(epic);
         tManager.addTask(subtask);
@@ -59,7 +63,7 @@ public class InMemoryHistoryManagerTest {
     @Test
     public void addingMoreThan10TasksToHistory() {
         for (int i = 1; i < 15; i++) {
-            tManager.addTask(new Task("T", "D", StatusPriority.DONE));
+            tManager.addTask(new Task("T", "D", StatusPriority.DONE, now.plus(Duration.ofDays(i)), duration));
         }
 
         for (int i = 1; i < 15; i++) {
@@ -73,7 +77,7 @@ public class InMemoryHistoryManagerTest {
     @Test
     public void duplicatedTasksOverwritten() {
         for (int i = 1; i < 6; i++) {
-            tManager.addTask(new Task("T", "D", StatusPriority.DONE));
+            tManager.addTask(new Task("T", "D", StatusPriority.DONE, now.plus(Duration.ofDays(i)), duration));
         }
 
         for (int i = 1; i < 6; i++) {
@@ -99,7 +103,7 @@ public class InMemoryHistoryManagerTest {
     public void taskDeletedFromHistoryList() {
         //Добавление в список
         for (int i = 1; i < 6; i++) {
-            tManager.addTask(new Task("T", "D", StatusPriority.DONE));
+            tManager.addTask(new Task("T", "D", StatusPriority.DONE, now.plus(Duration.ofDays(i)), duration));
         }
 
         //Добавление в историю просмотров
@@ -121,7 +125,7 @@ public class InMemoryHistoryManagerTest {
     public void addDeleteOperationsKeepingRightOrder() {
         //Добавление в список
         for (int i = 1; i < 6; i++) {
-            tManager.addTask(new Task("T", "D", StatusPriority.DONE));
+            tManager.addTask(new Task("T", "D", StatusPriority.DONE, now.plus(Duration.ofDays(i)), duration));
         }
 
         tManager.getTaskById(4);
@@ -145,8 +149,8 @@ public class InMemoryHistoryManagerTest {
     @Test
     public void epicAndHisSubtasksDeletedFromHistoryList() {
         tManager.addTask(new Epic("sdass", "s"));
-        tManager.addTask(new Subtask("a", "s", StatusPriority.DONE, 1));
-        tManager.addTask(new Subtask("s", "e", StatusPriority.DONE, 1));
+        tManager.addTask(new Subtask("a", "s", StatusPriority.DONE, 1, now.plus(Duration.ofDays(1)), duration));
+        tManager.addTask(new Subtask("s", "e", StatusPriority.DONE, 1, now.plus(Duration.ofDays(12)), duration));
 
         tManager.getEpicById(1);
         tManager.getSubtaskById(2);

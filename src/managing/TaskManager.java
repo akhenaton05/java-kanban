@@ -64,6 +64,9 @@ public interface TaskManager {
     //Удаление Subtasks по ID
     void deleteSubtasksById(int id);
 
+    //Сортировка по дате начала задачи
+    TreeSet<Task> getPrioritizedTasks();
+
     List<Task> getHistory();
 
     int getCurrentId();
