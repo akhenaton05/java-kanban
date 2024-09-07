@@ -3,7 +3,7 @@ import managing.TaskManager;
 import tasks.Epic;
 import tasks.StatusPriority;
 import tasks.Subtask;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 

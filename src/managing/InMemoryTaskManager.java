@@ -306,6 +306,8 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic.getSubtasks().isEmpty()) {
             epic.setStatus(StatusPriority.NEW);
             epic.setHaveSubtasks(false);
+            epic.setStartTime(LocalDateTime.MAX);
+            epic.setDuration(Duration.ZERO);
         }
         checkEpicStatusPriority();
         epic.setDuration(epic.getDuration().minus(sub.getDuration()));

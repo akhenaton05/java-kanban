@@ -7,13 +7,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Task {
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
+
     private String title;
     private String description;
     private int id;
     private StatusPriority status;
     private LocalDateTime startTime;
     private Duration duration;
-    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
 
     public Task(String title, String description, StatusPriority status, LocalDateTime startTime, Duration duration) {
         this.title = title;

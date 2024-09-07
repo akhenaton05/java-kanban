@@ -4,7 +4,7 @@ import managing.TaskManager;
 import tasks.Epic;
 import tasks.StatusPriority;
 import tasks.Subtask;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 
@@ -46,7 +46,7 @@ public class EpicTest {
         ArrayList<Integer> epicIds = epic.getSubtasks();
         epicIds.add(savedEpic.getId());
         ArrayList<Subtask> subtasks = tManager.getEpicsSubtasks(epic.getId());
-        //Проверка на отсутствите savedEpic в сабтасках epic
+        //Проверка на отсутствие savedEpic в сабтасках epic
         Assertions.assertTrue(subtasks.size() == 1);
     }
 

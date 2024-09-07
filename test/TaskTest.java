@@ -2,7 +2,7 @@ import managing.Managers;
 import managing.TaskManager;
 import tasks.StatusPriority;
 import tasks.Task;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 

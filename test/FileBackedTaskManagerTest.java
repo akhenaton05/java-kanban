@@ -1,7 +1,7 @@
 import managing.FileBackedTaskManager;
 import managing.ManagerSaveException;
 import managing.TaskManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import tasks.Epic;
 import tasks.StatusPriority;
@@ -9,7 +9,6 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -18,29 +17,22 @@ public class FileBackedTaskManagerTest extends TaskManagerTest {
     private File tempFile = File.createTempFile("test", ".txt");
     private LocalDateTime now = LocalDateTime.now();
     private Duration duration = Duration.ofMinutes(30);
+    private FileBackedTaskManager fManager = new FileBackedTaskManager(tempFile);
+    private Task task1 = new Task("Сделать уроки", "Math", StatusPriority.IN_PROGRESS, LocalDateTime.now(), Duration.ofMinutes(55));
+    private Task task2 = new Task("Read the book", "DETECTIVE", StatusPriority.NEW, LocalDateTime.of(2025, 11, 21, 10, 15, 3), Duration.ofMinutes(55));
+    private Epic epic1 = new Epic("Сдача проекта", "Доделать проект по английскому");
+    private Epic epic2 = new Epic("Проверка снаряжения", "Просмотреть все снаряжение");
+    private Subtask subtask1 = new Subtask("", "Доделать проект по английскому", StatusPriority.DONE, 3, LocalDateTime.of(2022, 10, 22, 10, 15, 3), Duration.ofMinutes(33));
+    private Subtask subtask2 = new Subtask("", "Выучить пи", StatusPriority.IN_PROGRESS, 3, LocalDateTime.of(2023, 11, 21, 10, 15, 3), Duration.ofMinutes(55));
+    private Subtask subtask3 = new Subtask("", "Погулять", StatusPriority.DONE, 4, LocalDateTime.of(2024, 6, 4, 10, 15, 3), Duration.ofMinutes(3));
 
     public FileBackedTaskManagerTest() throws IOException {
     }
 
     @Test
-    public void serializationAndDeserializationEqualityTest() throws IOException {
-        Task task1 = new Task("Сделать уроки", "Math", StatusPriority.IN_PROGRESS, LocalDateTime.now(), Duration.ofMinutes(55));
-        Task task2 = new Task("Read the book", "DETECTIVE", StatusPriority.NEW, LocalDateTime.of(2025, 11, 21, 10, 15, 3), Duration.ofMinutes(55));
-        Epic epic1 = new Epic("Сдача проекта", "Доделать проект по английскому");
-        Epic epic2 = new Epic("Проверка снаряжения", "Просмотреть все снаряжение");
-        Subtask subtask1 = new Subtask("", "Доделать проект по английскому", StatusPriority.DONE, 3, LocalDateTime.of(2022, 10, 22, 10, 15, 3), Duration.ofMinutes(33));
-        Subtask subtask2 = new Subtask("", "Выучить пи", StatusPriority.IN_PROGRESS, 3, LocalDateTime.of(2023, 11, 21, 10, 15, 3), Duration.ofMinutes(55));
-        Subtask subtask3 = new Subtask("", "Погулять", StatusPriority.DONE, 4, LocalDateTime.of(2024, 6, 4, 10, 15, 3), Duration.ofMinutes(3));
-
-        FileBackedTaskManager fManager = new FileBackedTaskManager(tempFile);
-
+    public void serializationAndDeserializationTasksEqualityTest() throws IOException {
         fManager.addTask(task1);
         fManager.addTask(task2);
-        fManager.addTask(epic1);
-        fManager.addTask(epic2);
-        fManager.addTask(subtask1);
-        fManager.addTask(subtask2);
-        fManager.addTask(subtask3);
 
         FileBackedTaskManager newManager = FileBackedTaskManager.loadFromFile(tempFile);
 
@@ -72,6 +64,17 @@ public class FileBackedTaskManagerTest extends TaskManagerTest {
             }
         }
         Assertions.assertTrue(taskResult, "Поля тасков до и после сериализации не совпадают");
+    }
+
+    @Test
+    public void serializationAndDeserializationEpicsEqualityTest() throws IOException {
+        fManager.addTask(epic1);
+        fManager.addTask(epic2);
+
+        FileBackedTaskManager newManager = FileBackedTaskManager.loadFromFile(tempFile);
+
+        //Проверка равенства счетчика ID менеджеров до и после
+        Assertions.assertEquals(newManager.getCurrentId(), fManager.getCurrentId(), "ID тасков до и после сериализации не совпадают");
 
         boolean epicResult = true;
         if (fManager.showAllEpics().size() != newManager.showAllEpics().size()) {
@@ -97,6 +100,23 @@ public class FileBackedTaskManagerTest extends TaskManagerTest {
             }
         }
         Assertions.assertTrue(epicResult, "Поля эпиков до и после сериализации не совпадают");
+    }
+
+    @Test
+    public void serializationAndDeserializationSubtasksEqualityTest() throws IOException {
+        fManager.addTask(epic1);
+        fManager.addTask(epic2);
+        subtask1.setEpicId(epic1.getId());
+        subtask2.setEpicId(epic1.getId());
+        subtask3.setEpicId(epic2.getId());
+        fManager.addTask(subtask1);
+        fManager.addTask(subtask2);
+        fManager.addTask(subtask3);
+
+        FileBackedTaskManager newManager = FileBackedTaskManager.loadFromFile(tempFile);
+
+        //Проверка равенства счетчика ID менеджеров до и после
+        Assertions.assertEquals(newManager.getCurrentId(), fManager.getCurrentId(), "ID тасков до и после сериализации не совпадают");
 
         boolean subtaskResult = true;
         if (fManager.showAllSubtasks().size() != newManager.showAllSubtasks().size()) {
@@ -124,7 +144,6 @@ public class FileBackedTaskManagerTest extends TaskManagerTest {
             }
         }
         Assertions.assertTrue(subtaskResult, "Поля сабтасков до и после сериализации не совпадают");
-
     }
 
     @Test

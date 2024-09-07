@@ -3,7 +3,7 @@ import org.junit.jupiter.api.BeforeEach;
 import tasks.Epic;
 import tasks.StatusPriority;
 import tasks.Subtask;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import tasks.Task;
 
