@@ -9,7 +9,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class HttpTaskServer {
-    private final int PORT = 8080;
+    private final int Port = 8080;
     protected static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static InMemoryTaskManager tManager;
     private HttpServer server;
@@ -22,7 +22,7 @@ public class HttpTaskServer {
     }
 
     public void createServer() throws IOException {
-        server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        server = HttpServer.create(new InetSocketAddress(Port), 0);
         server.createContext("/tasks", new TasksHandler(tManager));
         server.createContext("/epics", new EpicsHandler(tManager));
         server.createContext("/subtasks", new SubtasksHandler(tManager));
@@ -32,7 +32,7 @@ public class HttpTaskServer {
 
     public void start() {
         server.start();
-        System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
+        System.out.println("HTTP-сервер запущен на " + Port + " порту!");
     }
 
     public void stop() {
