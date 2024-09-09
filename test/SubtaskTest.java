@@ -3,18 +3,22 @@ import managing.TaskManager;
 import tasks.Epic;
 import tasks.StatusPriority;
 import tasks.Subtask;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SubtaskTest {
     private TaskManager tManager = Managers.getDefault();
+    private LocalDateTime now = LocalDateTime.now();
+    private Duration duration = Duration.ofMinutes(30);
     private Epic epic = new Epic("Name", "SD");
-    private Subtask subtask = new Subtask("Name", "Description", StatusPriority.NEW, 1);
+    private Subtask subtask = new Subtask("Name", "Description", StatusPriority.NEW, 1, now, duration);
 
     @AfterEach
     public void afterEach() {
@@ -26,7 +30,7 @@ public class SubtaskTest {
     public void equalSubtasksBySetId() {
         tManager.addTask(epic);
         tManager.addTask(subtask);
-        Subtask savedSubtask = new Subtask("Name!", "Description!", StatusPriority.NEW, 1);
+        Subtask savedSubtask = new Subtask("Name!", "Description!", StatusPriority.NEW, 1, now.plus(Duration.ofDays(2)), duration);
         savedSubtask.setId(2);
         Assertions.assertEquals(subtask, savedSubtask, "Эпики не совпадают.");
     }
@@ -34,7 +38,7 @@ public class SubtaskTest {
     @Test
     public void notAbleToAddSubtaskAsAnEpic() {
         tManager.addTask(epic);
-        Subtask subtask = new Subtask("Name", "Description", StatusPriority.NEW, 1);
+        Subtask subtask = new Subtask("Name", "Description", StatusPriority.NEW, 1, now, duration);
         //Добавляем сабтаск, его id = 2
         tManager.addTask(subtask);
         //Проверяем на null список эпиков с id = 2, если null - сабтаск с epicId = 2 не добавить
@@ -67,7 +71,7 @@ public class SubtaskTest {
         Assertions.assertTrue(tManager.showAllSubtasks().isEmpty());
 
         //Удаление через очистку всего списка
-        Subtask subtask1 = new Subtask("Description!", "SDA", StatusPriority.DONE, 1);
+        Subtask subtask1 = new Subtask("Description!", "SDA", StatusPriority.DONE, 1, now, duration);
 
         tManager.addTask(subtask);
         tManager.addTask(subtask1);
@@ -81,7 +85,7 @@ public class SubtaskTest {
         tManager.addTask(epic);
         tManager.addTask(subtask);
         Subtask s = tManager.getSubtaskById(2);
-        Subtask savedSubtask = new Subtask("Name", "Description", StatusPriority.DONE, 1);
+        Subtask savedSubtask = new Subtask("Name", "Description", StatusPriority.DONE, 1, now, duration);
         savedSubtask.setId(2);
 
         Assertions.assertEquals(s, savedSubtask, "Не равны по Id");
@@ -91,7 +95,7 @@ public class SubtaskTest {
     public void equalsByUpdating() {
         tManager.addTask(epic);
         tManager.addTask(subtask);
-        Subtask savedSubtask = new Subtask("New Name", "New Description", StatusPriority.DONE, 1);
+        Subtask savedSubtask = new Subtask("New Name", "New Description", StatusPriority.DONE, 1, now.plus(Duration.ofDays(1)), duration);
         savedSubtask.setId(2);
         tManager.updateTask(savedSubtask);
 

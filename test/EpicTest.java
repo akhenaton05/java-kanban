@@ -1,21 +1,26 @@
+import managing.InMemoryTaskManager;
 import managing.Managers;
 import managing.TaskManager;
 import tasks.Epic;
 import tasks.StatusPriority;
 import tasks.Subtask;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EpicTest {
-    private TaskManager tManager = Managers.getDefault();
+    private InMemoryTaskManager tManager = (InMemoryTaskManager) Managers.getDefault();
+    private LocalDateTime now = LocalDateTime.now();
+    private Duration duration = Duration.ofMinutes(30);
     private Epic epic = new Epic("Name", "Description");
-    private Subtask subtask = new Subtask("Name", "Description", StatusPriority.NEW, 1);
+    private Subtask subtask = new Subtask("Name", "Description", StatusPriority.NEW, 1, now, duration);
 
     @AfterEach
     public void afterEach() {
@@ -40,9 +45,9 @@ public class EpicTest {
         //Добавляем savedEpic ID в список сабтаска epic
         ArrayList<Integer> epicIds = epic.getSubtasks();
         epicIds.add(savedEpic.getId());
-        ArrayList<Subtask> subtasks = tManager.getEpicsSubtasks(1);
-        //Проверка на отсутствите savedEpic в сабтасках epic (2й элемент savedEpic - должен быть null)
-        Assertions.assertNull(subtasks.get(1));
+        ArrayList<Subtask> subtasks = tManager.getEpicsSubtasks(epic.getId());
+        //Проверка на отсутствие savedEpic в сабтасках epic
+        Assertions.assertTrue(subtasks.size() == 1);
     }
 
     @Test
@@ -51,7 +56,7 @@ public class EpicTest {
         final int epicId = epic.getId();
         final Epic savedEpic = tManager.getEpicById(epicId);
 
-        assertNotNull(savedEpic, "Эпик не найден."); // Метод add доабвил epic в список
+        assertNotNull(savedEpic, "Эпик не найден.");
         assertEquals(epic, savedEpic, "Эпики не совпадают.");
 
         final List<Epic> epics = tManager.showAllEpics();
@@ -91,13 +96,14 @@ public class EpicTest {
         //Проверка статуса
         Assertions.assertEquals(StatusPriority.NEW, epic.getStatus(), "Статус не обновился");
 
-        Subtask subtask1 = new Subtask("T1", "D1", StatusPriority.DONE, 1);
+        Subtask subtask1 = new Subtask("T1", "D1", StatusPriority.DONE, 1, now.plus(Duration.ofDays(1)), duration);
         tManager.addTask(subtask1);
         //Проверка изменения статуса на IN_PROGRESS (2 сабтаска, 1 из которых не завершенный)
         Assertions.assertEquals(StatusPriority.IN_PROGRESS, epic.getStatus(), "Статус не обновился");
 
-        subtask.setStatus(StatusPriority.DONE);
-        tManager.updateTask(subtask);
+        Subtask subtask2 = new Subtask("T1", "D1", StatusPriority.DONE, 1, now.plus(Duration.ofDays(2)), duration);
+        subtask2.setId(subtask.getId());
+        tManager.updateTask(subtask2);
         //Проверка изменения статуса на DONE (2 сабтаска, 2 из которых завершенные)
         Assertions.assertEquals(StatusPriority.DONE, epic.getStatus(), "Статус не обновился");
 
